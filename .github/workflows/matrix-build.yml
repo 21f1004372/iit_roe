@@ -1,0 +1,39 @@
+name: Multi-Platform Matrix Build (d1f8944)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Matrix build: 3 Node.js versions
+    strategy:
+      matrix:
+        node-version: [14, 16, 18]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Identifier step (required)
+      - name: matrix-d1f8944
+        run: echo "Building for Node.js version ${{ matrix.node-version }}"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Generate build artifact
+        run: |
+          echo "Build output for Node.js version ${{ matrix.node-version }}" > build-output-${{ matrix.node-version }}.txt
+          echo "Timestamp: $(date)" >> build-output-${{ matrix.node-version }}.txt
+          echo "Node version: ${{ matrix.node-version }}" >> build-output-${{ matrix.node-version }}.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-d1f8944-v${{ matrix.node-version }}
+          path: build-output-${{ matrix.node-version }}.txt
